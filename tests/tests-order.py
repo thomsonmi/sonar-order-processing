@@ -1,4 +1,4 @@
-from app.order_processor import calculate_discount, apply_tax, parse_quantity
+from app.orderprocessor import calculate_discount, apply_tax, parse_quantity
 
 
 def test_vip_discount_high():
