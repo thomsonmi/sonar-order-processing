@@ -1,47 +1,34 @@
 import os
 
-# Intentional Security issue: hardcoded API key
-PAYMENT_API_KEY = "sk_live_998877665544332211"
+
+def get_payment_api_key():
+    """Retrieve the payment API key from the environment instead of hardcoding."""
+    return os.getenv("PAYMENT_API_KEY", "")
 
 
 def calculate_discount(total, customer_type):
-    unused_temp = 0  # Intentional Code Smell: unused variable
     if customer_type == "VIP":
-        if total > 100:
-            return total * 0.20
-        else:
-            return total * 0.10
-    elif customer_type == "REGULAR":
-        if total > 100:
-            return total * 0.10
-        else:
-            return 0.0
-    else:
-        return 0.0
+        return total * 0.20 if total > 100 else total * 0.10
+    if customer_type == "REGULAR" and total > 100:
+        return total * 0.10
+    return 0.0
 
 
 def apply_tax(amount, region):
-    if region == "ON":
-        tax = amount * 0.13
-        return round(amount + tax, 2)
-    elif region == "BC":
-        tax = amount * 0.12
-        return round(amount + tax, 2)
-    else:
-        tax = amount * 0.05
-        return round(amount + tax, 2)
+    tax_rates = {"ON": 0.13, "BC": 0.12}
+    rate = tax_rates.get(region, 0.05)
+    return round(amount * (1 + rate), 2)
 
 
 def parse_quantity(raw_value):
     try:
         qty = int(raw_value)
-        if qty == qty:  # Intentional Bug/Smell: identical expressions
-            return qty
-    except:  # Intentional Code Smell: bare except
+        return qty if qty > 0 else 0
+    except (ValueError, TypeError):
         return 0
 
 
 def format_receipt(customer_name, total):
-    if customer_name == None:  # Intentional Code Smell: == None instead of is None
+    if customer_name is None:
         customer_name = "Guest"
     return f"Receipt for {customer_name}: ${total:.2f}"
